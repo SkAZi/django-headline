@@ -1,5 +1,5 @@
-Django-Headlines
-================
+Django-Headline
+===============
 
 Complex of tags and filters for easy replacement of text
 with alternative font faces. For browsers, who doesn`t
@@ -88,7 +88,7 @@ HEADLINE_CLASSES = {
 
 template.html
 
-{% load headlines %}
+{% load headline %}
 
 Param string:
    <class>[, <break type>]
