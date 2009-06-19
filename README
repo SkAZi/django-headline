@@ -1,0 +1,124 @@
+Django-Headlines
+================
+
+Complex of tags and filters for easy replacement of text
+with alternative font faces. For browsers, who doesn`t
+support it by themselves.
+
+
+1. Copyright
+2. Regards
+3. Reqirements
+4. Installation and configuration
+5. Usecase
+6. ToDo
+
+
+1. Copyright
+------------
+
+Copyright (C) 2009 Igor "SkAZi" Potapov <igor@poatpoff.org>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+
+2. Regards
+----------
+
+Based on django-image-replacement:
+http://code.google.com/p/django-image-replacement/
+Thanx to Ned for Truly transparent text algorythm:
+http://nedbatchelder.com/blog/200801/truly_transparent_text_with_pil.html
+
+
+
+3. Reqirements
+--------------
+
+- Python 2.4+
+- Python Image Library
+- Freetype2
+- Django 1.0+
+
+
+
+4. Installation ad configuration
+--------------------------------
+
+Put headlines.py into templatetags folder of your project.
+
+settings.py
+
+# Cache files folder, based on settings.MEDIA_ROOT 
+HEADLINE_CACHE_DIR = 'tmp/textcache'
+
+# Fonts files folder, based on settings.MEDIA_ROOT 
+HEADLINE_FONTS_DIR = 'fonts'
+
+# Png optimizer. Optional.
+HEADLINE_PNG_OPTIMIZER = "optipng -o7 %(file)s"
+
+# Class presets
+HEADLINE_CLASSES = {
+   "<class_name>": {
+       'font': <file>,
+       'size': <size>,
+       'color': <hex color>,
+       'decoration': ['underline', 'strikeout'], # Optional
+   }
+}
+
+
+
+5. Usecase
+----------
+
+template.html
+
+{% load headlines %}
+
+Param string:
+   <class>[, <break type>]
+   <font file>, <size>, <color>[, underlined][, strikeout][, <break type>]
+Break type:
+   none, br, all (spaces + br)
+
+Filter:
+   {{ foo|headline:"font.ttf,20,#000" }}
+   {{ foo|headline:"font.ttf,20,#000,underlined,all" }}
+   {{ foo|headline:"base,br" }}
+
+Inclusion tag:
+   {% headline "font.ttf,20,#000" %}Big {{ foo }}{% endheadline %}
+   {% headline "font.ttf,20,#000,strikeout,none" %}Big {{ foo }}{% endheadline %}
+   {% headline "base" %}Big {{ foo }}{% endheadline %}
+
+Context modifier tag:
+   {% headlines foo_list bar_dict baz_var "And some text" as headers "font.ttf,20,#000" %}
+   {% headlines foo_list bar_dict baz_var "And some text" as headers "font.ttf,20,#000,all" %}
+   {% headlines foo_list bar_dict baz_var "And some text" as headers "base" %}
+
+
+
+6. TODO
+-------
+
+- Unit testing
+- Replace text only for old browsers
+- Hex entities
+- More info in Exceptions
+- Decoration parameters: underline:-10
+- More decoration options: shadow, glow
