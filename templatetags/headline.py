@@ -13,7 +13,10 @@ from django.template import TemplateSyntaxError
 
 import Image, ImageFont, ImageDraw, ImageChops
 from os import path
-import md5
+try:
+    from hashlib import md5
+except:
+    from md5  import new as md5
 import re
 
 HEADLINE_CACHE_DIR = getattr(settings, 'HEADLINE_CACHE_DIR', 'upload')
@@ -61,11 +64,11 @@ def _img_from_text(text, font, size=12, color='#000', decoration=[]):
     image_path = path.join(settings.MEDIA_ROOT, HEADLINE_CACHE_DIR)
     font_path = path.join(settings.MEDIA_ROOT, HEADLINE_FONTS_DIR)
 
-    id = "headline-%s" % md5.new(smart_str(''.join((text, font, size, color, ''.join(decoration))))).hexdigest()
+    id = "headline-%s" % md5(smart_str(''.join((text, font, size, color, ''.join(decoration))))).hexdigest()
     image_file = path.join(image_path, "%s.png" % id)
     
     size = int(size)
-    
+
     if not path.isfile(image_file):
         
         font = ImageFont.truetype(path.join(font_path, font), size)
