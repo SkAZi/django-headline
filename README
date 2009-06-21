@@ -12,6 +12,7 @@ support it by themselves.
 4. Installation and configuration
 5. Usecase
 6. ToDo
+7. Known improvements
 
 
 1. Copyright
@@ -122,3 +123,10 @@ Context modifier tag:
 - More info in Exceptions
 - Decoration parameters: underline:-10
 - More decoration options: shadow, glow
+
+
+7. Known improvements
+---------------------
+- Some bold handed fonts, that not to be able to get into bounding box
+  provides an error
+- "optipng -o7" does not work in IE6
