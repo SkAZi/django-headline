@@ -3,7 +3,7 @@
 # Copyright (C) 2009 Igor "SkAZi" Potapov <igor@poatpoff.org>
 # GNU General Public License
 #
-#
+# http://github.com/SkAZi/django-headline/
 
 from django import template
 from django.conf import settings
@@ -20,11 +20,12 @@ except:
 import re
 
 HEADLINE_CACHE_DIR = getattr(settings, 'HEADLINE_CACHE_DIR', 'upload')
+HEADLINE_NO_CACHE = getattr(settings, 'HEADLINE_NO_CACHE', False)
 HEADLINE_FONTS_DIR = getattr(settings, 'HEADLINE_FONTS_DIR', 'fonts')
 HEADLINE_CLASSES = getattr(settings, 'HEADLINE_CLASSES', {})
 HEADLINE_PNG_OPTIMIZER = getattr(settings, 'HEADLINE_PNG_OPTIMIZER', False)
 
-AVIABLE_DECORATIONS = ('underline', 'strikeout', 'shadow')
+AVIABLE_DECORATIONS = ('underline', 'strikeout')
 AVIABLE_SPLITTERS = ('br', 'all', 'none')
 
 ENTITIES = (
@@ -69,7 +70,7 @@ def _img_from_text(text, font, size=12, color='#000', decoration=[]):
     
     size = int(size)
 
-    if not path.isfile(image_file):
+    if not path.isfile(image_file) or HEADLINE_NO_CACHE:
         
         font = ImageFont.truetype(path.join(font_path, font), size)
         width, height = font.getsize(text)

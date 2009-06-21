@@ -70,7 +70,7 @@ HEADLINE_CACHE_DIR = 'tmp/textcache'
 HEADLINE_FONTS_DIR = 'fonts'
 
 # Png optimizer. Optional.
-HEADLINE_PNG_OPTIMIZER = "optipng -o7 %(file)s"
+HEADLINE_PNG_OPTIMIZER = "optipng -q -o7 %(file)s"
 
 # Class presets
 HEADLINE_CLASSES = {
@@ -99,7 +99,7 @@ Break type:
 
 Filter:
    {{ foo|headline:"font.ttf,20,#000" }}
-   {{ foo|headline:"font.ttf,20,#000,underlined,all" }}
+   {{ foo|headline:"font.ttf,20,#000,underline,all" }}
    {{ foo|headline:"base,br" }}
 
 Inclusion tag:
@@ -129,4 +129,6 @@ Context modifier tag:
 ---------------------
 - Some bold handed fonts, that not to be able to get into bounding box
   provides an error
-- "optipng -o7" does not work in IE6
+
+You must know that:
+- optipng recompression does not works with IE6
