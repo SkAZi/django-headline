@@ -11,8 +11,7 @@ support it by themselves.
 3. Reqirements
 4. Installation and configuration
 5. Usecase
-6. ToDo
-7. Known improvements
+6. Known improvements
 
 
 1. Copyright
@@ -69,6 +68,10 @@ HEADLINE_CACHE_DIR = 'tmp/textcache'
 # Fonts files folder, based on settings.MEDIA_ROOT 
 HEADLINE_FONTS_DIR = 'fonts'
 
+# Template for % output, default is:
+# <img alt="%(text)s" src="%(url)s" class="png" width="%(width)s" height="%(height)s" />
+HEADLINE_TEMPLATE = "headline.html"
+
 # Png optimizer. Optional.
 HEADLINE_PNG_OPTIMIZER = "optipng -q -o7 %(file)s"
 
@@ -114,18 +117,7 @@ Context modifier tag:
 
 
 
-6. TODO
--------
-
-- Unit testing
-- Replace text only for old browsers
-- Hex entities
-- More info in Exceptions
-- Decoration parameters: underline:-10
-- More decoration options: shadow, glow
-
-
-7. Known improvements
+6. Known improvements
 ---------------------
 - Some bold handed fonts, that not to be able to get into bounding box
   provides an error

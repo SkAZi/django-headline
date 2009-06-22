@@ -23,6 +23,8 @@ HEADLINE_CACHE_DIR = getattr(settings, 'HEADLINE_CACHE_DIR', 'upload')
 HEADLINE_NO_CACHE = getattr(settings, 'HEADLINE_NO_CACHE', False)
 HEADLINE_FONTS_DIR = getattr(settings, 'HEADLINE_FONTS_DIR', 'fonts')
 HEADLINE_CLASSES = getattr(settings, 'HEADLINE_CLASSES', {})
+HEADLINE_TEMPLATE = getattr(settings, 'HEADLINE_TEMPLATE',
+        u"""<img alt="%(text)s" src="%(url)s" class="png" width="%(width)s" height="%(height)s" />""")
 HEADLINE_PNG_OPTIMIZER = getattr(settings, 'HEADLINE_PNG_OPTIMIZER', False)
 
 AVIABLE_DECORATIONS = ('underline', 'strikeout')
@@ -121,18 +123,18 @@ def _image_list(output, klass, splitter, object=False):
         
     for text in chunks:
         text = _clean_text(text)
+        if not text: continue
+
+        url, width, height = _img_from_text(text, **klass)
+        obj = { 'text': text,
+                'url': url,
+                'width': width,
+                'height': height }
+
         if object:
-            url, width, height = _img_from_text(text, **klass)
-            yield { 'text': text,
-                    'url': url,
-                    'width': width,
-                    'height': height }
+            yield obj
         else:
-            if text: 
-                yield u"""<img alt="%s" src="%s" class="png" width="%s" height="%s" />""" % \
-                  ((text,) + _img_from_text(text, **klass))
-            else: yield ""
-    
+            yield HEADLINE_TEMPLATE % obj
     
     
 def _create_splitter(splitting):
@@ -256,7 +258,7 @@ def do_text_images_tag(parser, token):
             if st.startswith('"') and st.endswith('"'):
                 output.append(st.strip('"'))
             else:
-                output.append(template.Variable(st))
+                output.append(parser.compile_filter(st))
                 
         return TextImagesNode(output, params[-2], klass, typ)
            
