@@ -1,0 +1,16 @@
+- templates for classes
+- additional headlines syntax:
+  {% headlines title as head "normal" "hover" "bold" %}
+- additional headlines syntax:
+  {% headlines title tofile "my-name-%(id)s" %}
+  {% headlines title as headers tofile "my-name-%(id)s" %}
+  Need to make predictable filenames for css/js dynamic
+- and both previous conceptions:
+  {% headlines title tofile "my-name-%(class)s" "normal" "hover" "bold" %}
+  
+- Unit testing
+- Replace text only for old browsers
+- Hex entities
+- More info in Exceptions
+- Decoration parameters: underline:-10
+- More decoration options: shadow, glow, opacity

@@ -70,7 +70,9 @@ HEADLINE_FONTS_DIR = 'fonts'
 
 # Template for % output, default is:
 # <img alt="%(text)s" src="%(url)s" class="png" width="%(width)s" height="%(height)s" />
-HEADLINE_TEMPLATE = "headline.html"
+HEADLINE_TEMPLATE = """
+    <img alt="%(text)s" src="%(url)s" />
+"""
 
 # Png optimizer. Optional.
 HEADLINE_PNG_OPTIMIZER = "optipng -q -o7 %(file)s"
