@@ -1,0 +1,4 @@
+#!/bin/sh
+
+python tests.py
+rm *.pyc *.png
