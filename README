@@ -102,7 +102,7 @@ template.html
 
 Param string:
    <class>[, <break type>]
-   <font file>, <size>, <color>[, <decorations>][, <break type>]
+   <font file>, <size>, <color>[, <break type>][, <decorations>]
 Break type:
    none, br, all (spaces + br)
 Decorations:

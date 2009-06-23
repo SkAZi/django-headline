@@ -38,7 +38,7 @@ AVIABLE_SPLITTERS = ('br', 'all', 'none')
 ENTITIES = (
     (u'&laquo;', u'«'), (u'&raquo;', u'»'),
     (u'&bdquo;', u'„'), (u'&ldquo;', u'“'),
-    (u'&lquo;', u'”'),  (u'&ndash', u'–'),
+    (u'&lquo;', u'”'),  (u'&ndash;', u'–'),
     (u'&mdash;', u'—'), (u'&amp;', u'&'),
     (u'&quot;', u"\""), (u'&apos;', u"'"),
     (u'&reg;', u'®'),   (u'&copy;', u'©'),
@@ -73,7 +73,7 @@ def _img_from_text(text, font, size=12, color='#000', decoration={}):
     image_path = path.join(settings.MEDIA_ROOT, HEADLINE_CACHE_DIR)
     font_path = path.join(settings.MEDIA_ROOT, HEADLINE_FONTS_DIR)
 
-    id = "headline-%s" % md5(smart_str(''.join((text, font, size, color, decoration.__str__())))).hexdigest()
+    id = "headline-%s" % md5(smart_str(''.join((text, font, size.__str__(), color, decoration.__str__())))).hexdigest()
     image_file = path.join(image_path, "%s.png" % id)
     
 
@@ -180,20 +180,25 @@ def _get_class( klass ):
         for param in params:
             param_unpack = param.split(':')
             if param_unpack[0] in AVIABLE_DECORATIONS:
-                decoration[param_unpack[0]] = param_unpack[1] or value
+                if len(param_unpack) > 1:
+                    decoration[param_unpack[0]] = param_unpack[1]
+                else:
+                    decoration[param_unpack[0]] = AVIABLE_DECORATIONS[param_unpack[0]]
             else:
                 cleaned.append(param)
         
+        if(len(cleaned) < 3):
+            raise TemplateSyntaxError('Must have at less 3 arguments')
+        elif len(cleaned) > 3:
+            typ = cleaned[3]
+        
         klass = {
             'font': cleaned[0],
-            'size': cleaned[1],
+            'size': int(cleaned[1]),
             'color': cleaned[2],
             'decoration': decoration
         }
         
-        if len(params) > 3:
-            typ = params[3]
-            
         return klass, typ
         
     elif params > 0:
