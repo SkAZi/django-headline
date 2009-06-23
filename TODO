@@ -12,5 +12,4 @@
 - Replace text only for old browsers
 - Hex entities
 - More info in Exceptions
-- Decoration parameters: underline:-10
-- More decoration options: shadow, glow, opacity
+- More decoration options: shadow, glow

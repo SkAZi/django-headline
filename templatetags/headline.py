@@ -16,7 +16,7 @@ from os import path
 try:
     from hashlib import md5
 except:
-    from md5  import new as md5
+    from md5 import new as md5
 import re
 
 HEADLINE_CACHE_DIR = getattr(settings, 'HEADLINE_CACHE_DIR', 'upload')
@@ -27,7 +27,12 @@ HEADLINE_TEMPLATE = getattr(settings, 'HEADLINE_TEMPLATE',
         u"""<img alt="%(text)s" src="%(url)s" class="png" width="%(width)s" height="%(height)s" />""")
 HEADLINE_PNG_OPTIMIZER = getattr(settings, 'HEADLINE_PNG_OPTIMIZER', False)
 
-AVIABLE_DECORATIONS = ('underline', 'strikeout')
+AVIABLE_DECORATIONS = {
+    'underline': 0,
+    'strikeout': 0,
+    'opacity': 1,
+}
+
 AVIABLE_SPLITTERS = ('br', 'all', 'none')
 
 ENTITIES = (
@@ -58,22 +63,23 @@ def _clean_text(text):
 
 
 
-def _img_from_text(text, font, size=12, color='#000', decoration=[]):
+def _img_from_text(text, font, size=12, color='#000', decoration={}):
     """
         Draws text with font, size, color and decoration parameters.
         Caches images and returns (html or object, width, size) of
         new or exists image
     """
+    
     image_path = path.join(settings.MEDIA_ROOT, HEADLINE_CACHE_DIR)
     font_path = path.join(settings.MEDIA_ROOT, HEADLINE_FONTS_DIR)
 
-    id = "headline-%s" % md5(smart_str(''.join((text, font, size, color, ''.join(decoration))))).hexdigest()
+    id = "headline-%s" % md5(smart_str(''.join((text, font, size, color, decoration.__str__())))).hexdigest()
     image_file = path.join(image_path, "%s.png" % id)
     
-    size = int(size)
 
     if not path.isfile(image_file) or HEADLINE_NO_CACHE:
         
+        size = int(size)
         font = ImageFont.truetype(path.join(font_path, font), size)
         width, height = font.getsize(text)
         
@@ -84,13 +90,23 @@ def _img_from_text(text, font, size=12, color='#000', decoration=[]):
         draw = ImageDraw.Draw(imtext)
         
         ### Real Drawings on alpha with white color
-        draw.text((0, 0), text, font=font, fill="white")
-        if 'underline' in decoration:
-            draw.line((0 + size/20, height*3/4, width - size/20, height*3/4),
-                      fill="white", width=size/20)
-        if 'strikeout' in decoration:
-            draw.line((0 + size/20, height/2, width - size/20, height/2),
-                      fill="white", width=size/20)
+        if decoration.has_key('opacity'):
+            opacity = float(decoration['opacity']) * 255
+        else:
+            opacity = 255
+            
+        draw.text((0, 0), text, font=font, fill=opacity)
+        if decoration.has_key('underline'):
+            val = int(decoration['underline'])
+            draw.line((0 + size/20, height * 4 / 5 + val,
+                       width - size/20, height * 4 / 5 + val),
+                       fill=opacity, width=size / 20)
+            
+        if decoration.has_key('strikeout'):
+            val = int(decoration['strikeout'])
+            draw.line((0 + size/20, height / 2  + val,
+                       width - size/20, height / 2  + val),
+                       fill=opacity, width=size / 20)
             
         ### Alpha color black-magic
         alpha = ImageChops.lighter(alpha, imtext)
@@ -155,19 +171,23 @@ def _get_class( klass ):
         Get or create real class parameters by options string
     """
     params = re.split(r", *", klass.strip('"'))
+    cleaned = []
     typ = False
 
     if len(params) > 2:
-        decoration = []
-        for i in AVIABLE_DECORATIONS:
-            if i in params:
-                decoration.append(i)
-                params.remove(i)
+        decoration = {}
+        
+        for param in params:
+            param_unpack = param.split(':')
+            if param_unpack[0] in AVIABLE_DECORATIONS:
+                decoration[param_unpack[0]] = param_unpack[1] or value
+            else:
+                cleaned.append(param)
         
         klass = {
-            'font': params[0],
-            'size': params[1],
-            'color': params[2],
+            'font': cleaned[0],
+            'size': cleaned[1],
+            'color': cleaned[2],
             'decoration': decoration
         }
         
@@ -180,7 +200,7 @@ def _get_class( klass ):
         klass = params[0]
         if len(params) > 1:
             typ = params[1]
-
+        
         try:
             return HEADLINE_CLASSES[klass], typ
         except:
