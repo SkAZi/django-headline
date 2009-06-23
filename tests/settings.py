@@ -7,7 +7,7 @@ MEDIA_URL = ''
 HEADLINE_CLASSES = {
    "class_name": {
        'font': "font.ttf",
-       'size': 10,
+       'size': 120,
        'color': "#000",
        'decoration': {
             'underline': -10,
