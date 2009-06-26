@@ -1,0 +1,7 @@
+#!/bin/sh
+
+ln ./tests/font.ttf ./font.ttf
+ln ./tests/settings.py ./settings.py
+
+cat tests/django-headline.py | python 
+rm ./*.pyc ./*.png ./settings.py ./font.ttf

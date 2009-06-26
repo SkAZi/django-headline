@@ -1,1 +1,0 @@
-/home/skazi/Projects/Django/django-headline/templatetags/headline.py

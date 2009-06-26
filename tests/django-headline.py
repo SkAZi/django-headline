@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import random
 import unittest
-import headline
+from templatetags import headline
 from os import path
 from django.template import TemplateSyntaxError
 import Image
