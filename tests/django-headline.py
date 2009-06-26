@@ -13,10 +13,10 @@ class TestHeadlines(unittest.TestCase):
         self.assertEqual(headline._clean_text(u"  test "), u"test", "Space cleaning failed")
         self.assertEqual(headline._clean_text(u"   \t   "), u"", "Space and Tabs cleaning failed")
         self.assertEqual(headline._clean_text(
-            u"\t &laquo;\t&raquo;&bdquo;&ldquo;&lquo;&ndash;&mdash;&amp;&quot;&apos;&reg;&copy;&trade;&sect;&euro;&nbsp;&rsquo;&Prime;&le;&ge;&lt;&gt;\n \t "
-        ),  u"«    »„“”–—&\"'®©™§€ ’″≤≥<>", "Html-entities replacement failed")
+            u"\t &laquo;&raquo;&bdquo;&ldquo;&ndash;&mdash;&amp;&quot;&reg;&copy;&trade;&sect;&euro;&nbsp;&rsquo;&Prime;&le;&ge;&lt;&gt;\n \t "
+        ), u"«»„“–—&\"®©™§€ ’″≤≥<>", "Html-entities replacement failed")
         self.assertEqual(headline._clean_text(u"&test; &some;"), u"&test; &some;", "Something width unknown entities")
-        self.assertEqual(headline._clean_text(u"&nbsp; &nbsp;"), u"   ", "&nbsp; replacement failed")
+        self.assertEqual(headline._clean_text(u"&nbsp; &nbsp;"), u"\xa0 \xa0", "&nbsp; replacement failed")
 
     def test_create_splitter(self):
         splitter, joiner = headline._create_splitter(u"br")

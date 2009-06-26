@@ -11,6 +11,7 @@ from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
 from django.template import TemplateSyntaxError
 
+from htmlentitydefs import name2codepoint
 import Image, ImageFont, ImageDraw, ImageChops
 from os import path
 try:
@@ -35,20 +36,20 @@ AVIABLE_DECORATIONS = {
 
 AVIABLE_SPLITTERS = ('br', 'all', 'none')
 
-ENTITIES = (
-    (u'&laquo;', u'«'), (u'&raquo;', u'»'),
-    (u'&bdquo;', u'„'), (u'&ldquo;', u'“'),
-    (u'&lquo;', u'”'),  (u'&ndash;', u'–'),
-    (u'&mdash;', u'—'), (u'&amp;', u'&'),
-    (u'&quot;', u"\""), (u'&apos;', u"'"),
-    (u'&reg;', u'®'),   (u'&copy;', u'©'),
-    (u'&trade;', u'™'), (u'&sect;', u'§'),
-    (u'&euro;', u'€'),  (u'&nbsp;', u' '),
-    (u'&rsquo;', u'’'), (u'&Prime;', u'″'),
-    (u'&le;', u'≤'),    (u'&ge;', u'≥'),
-    (u'&lt;', u'<'),    (u'&gt;', u'>'),
-    (u'\n', u''),       (u'\t', u'    '),
-)
+ENTITY_CONVERTER = re.compile(r'(?:&#x([a-fA-F\d]{1,4});)|(?:&#(\d{1,5});)|(?:&([a-zA-Z\d]+);)')
+
+def _convertentity(m):
+    """
+        Convert single entity ino unicode
+    """
+    if m.group(1):
+        return unichr(int(m.group(1), 16))
+    elif m.group(2):
+        return unichr(int(m.group(2)))
+    elif m.group(3) and m.group(3) in name2codepoint:
+        return unichr(name2codepoint[m.group(3)])
+    else:
+        return m.group(0)
 
 
 def _clean_text(text):
@@ -56,11 +57,8 @@ def _clean_text(text):
         Clean text from extra spaces and replaces
         html-entities by unicode symbols
     """
-    text = text.strip()
-    for (s, r) in ENTITIES:
-        text = re.sub(s, r, text)
-    return text
-
+    text = text.strip().replace(u'\n', u'').replace(u'\r', u'')
+    return ENTITY_CONVERTER.sub(_convertentity, text)
 
 
 def _img_from_text(text, font, size=12, color='#000', decoration={}):
