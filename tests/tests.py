@@ -7,17 +7,17 @@ from django.template import TemplateSyntaxError
 import Image
 from settings import *
 
-class Tentacle(dict):
+class Mock(dict):
     def __init__(self, __value__=None, **kwargs):
         self.__value__ = __value__ 
-        super(Tentacle, self).__init__(**kwargs)
+        super(Mock, self).__init__(**kwargs)
     def __getattr__(self, item):
         if not item in self:
-            self[item] = Tentacle()
+            self[item] = Mock()
         return self[item]
     def __setattr__(self, item, value):
         if item != '__value__':
-            self[item] = Tentacle(value)
+            self[item] = Mock(value)
         else:
             self.__dict__[item] = value
     def __call__(self, *args, **kwargs):
@@ -57,12 +57,7 @@ class TestHeadlines(unittest.TestCase):
         self.failUnlessRaises(TemplateSyntaxError, lambda: headline._get_class("font.ttf,#000"))
         self.failUnlessRaises(TemplateSyntaxError, lambda: headline._get_class("class_name,all,strikeout:10000"))
         
-        decore = {
-            'font': "font.ttf",
-            'size': 12,
-            'color': "#000",
-            'decoration': {}
-        }
+        decore = {            'font': "font.ttf",            'size': 12,            'color': "#000",            'decoration': {}        }
         
         self.assertEqual(headline._get_class("font.ttf,12,#000"), (decore, False), "Params parsing failed: clean")
         self.assertEqual(headline._get_class("font.ttf,12,#000,all"), (decore, "all"), "Params parsing failed: break type all")
@@ -129,11 +124,11 @@ class TestHeadlines(unittest.TestCase):
         self.assert_(path.isfile("headline-1e1ee9cb10da2d897bdca38eaae8ae12.png"), "File with filter doesnt created")
     
     def test_do_text_image_tag(self):
-        parser = Tentacle()
+        parser = Mock()
         parser.parse = parser
         parser.render = 'test_do_text_image_tag'
         
-        token = Tentacle()
+        token = Mock()
         token.split_contents = ('headline', 'class_name')
         
         imageNode = headline.do_text_image_tag(parser, token)
@@ -142,10 +137,10 @@ class TestHeadlines(unittest.TestCase):
 
     
     def test_do_text_images_tag(self):
-        parser = Tentacle()
+        parser = Mock()
         parser.compile_filter = "HELLO"
         
-        token = Tentacle()
+        token = Mock()
         token.split_contents = ('headlines', '"test_do_text_images_tag"', 'Hello|upper', 'as', 'headlines', '"class_name"')
 
         imageNodes = headline.do_text_images_tag(parser, token)
