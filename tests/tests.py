@@ -7,6 +7,22 @@ from django.template import TemplateSyntaxError
 import Image
 from settings import *
 
+class Tentacle(dict):
+    def __init__(self, __value__=None, **kwargs):
+        self.__value__ = __value__ 
+        super(Tentacle, self).__init__(**kwargs)
+    def __getattr__(self, item):
+        if not item in self:
+            self[item] = Tentacle()
+        return self[item]
+    def __setattr__(self, item, value):
+        if item != '__value__':
+            self[item] = Tentacle(value)
+        else:
+            self.__dict__[item] = value
+    def __call__(self, *args, **kwargs):
+        return self.__value__
+
 class TestHeadlines(unittest.TestCase):
     
     def test_clean_text(self):
@@ -109,19 +125,41 @@ class TestHeadlines(unittest.TestCase):
        
     
     def test_do_text_image_filter(self):
-        pass
+        self.assertEqual(headline.do_text_image_filter('test_do_text_image_filter', 'class_name'), u'''<img alt="test_do_text_image_filter" src="./headline-1e1ee9cb10da2d897bdca38eaae8ae12.png" />''', "Template for filter or filter aint work")
+        self.assert_(path.isfile("headline-1e1ee9cb10da2d897bdca38eaae8ae12.png"), "File with filter doesnt created")
     
     def test_do_text_image_tag(self):
-        pass
-    
-    def test_TextImageNode(self):
-        pass
+        parser = Tentacle()
+        parser.parse = parser
+        parser.render = 'test_do_text_image_tag'
+        
+        token = Tentacle()
+        token.split_contents = ('headline', 'class_name')
+        
+        imageNode = headline.do_text_image_tag(parser, token)
+        self.assertEqual(imageNode.render(''), u'''<img alt="test_do_text_image_tag" src="./headline-4fe670999bfea37424dfa1789e14e391.png" />''', "Template for tag headline or tag aint work")
+        self.assert_(path.isfile("headline-4fe670999bfea37424dfa1789e14e391.png"), "File with tag headline doesnt created")
+
     
     def test_do_text_images_tag(self):
-        pass
+        parser = Tentacle()
+        parser.compile_filter = "HELLO"
+        
+        token = Tentacle()
+        token.split_contents = ('headlines', '"test_do_text_images_tag"', 'Hello|upper', 'as', 'headlines', '"class_name"')
+
+        imageNodes = headline.do_text_images_tag(parser, token)
+        context = dict()
+        imageNodes.render(context)
+        
+        self.assertEqual(len(context['headlines']), 2)
+        self.assertEqual(context['headlines'][0]['url'], "./headline-8833bb66718a93d75a8330cf1f7c0f9e.png")
+        self.assertEqual(context['headlines'][0]['text'], "test_do_text_images_tag")
+        self.assertEqual(context['headlines'][1]['url'], "./headline-f28506525c21f7dc8d4a9d529e73d93b.png")
+        self.assertEqual(context['headlines'][1]['text'], "HELLO")
+        self.assert_(path.isfile("headline-8833bb66718a93d75a8330cf1f7c0f9e.png"), "File with tag headline doesnt created")
+        self.assert_(path.isfile("headline-f28506525c21f7dc8d4a9d529e73d93b.png"), "File with tag headline doesnt created")
     
-    def test_TextImagesNode(self):
-        pass
-  
+ 
 if __name__ == '__main__':
     unittest.main()
