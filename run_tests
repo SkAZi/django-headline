@@ -1,7 +1,9 @@
 #!/bin/sh
 
-ln ./tests/font.ttf ./font.ttf
-ln ./tests/settings.py ./settings.py
-
-cat tests/django-headline.py | python 
-rm ./*.pyc ./*.png ./settings.py ./font.ttf
+if [ `ln ./tests/settings.py ./settings.py` -a `ln ./tests/font.ttf ./font.ttf` ]; 
+then
+    cat tests/django-headline.py | python 
+    rm ./*.pyc ./*.png ./settings.py ./font.ttf
+else
+    echo Can\`t create link to settings.py
+fi
