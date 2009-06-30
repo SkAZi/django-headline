@@ -8,6 +8,9 @@ import Image
 from settings import *
 
 class Mock(dict):
+    '''
+        Mockup class for tags testing
+    '''
     def __init__(self, __value__=None, **kwargs):
         self.__value__ = __value__ 
         super(Mock, self).__init__(**kwargs)
@@ -26,39 +29,49 @@ class Mock(dict):
 class TestHeadlines(unittest.TestCase):
     
     def test_clean_text(self):
+        # Space trimming
         self.assertEqual(headline._clean_text(u"  test "), u"test", "Space cleaning failed")
+        #  Space and tabs trimming
         self.assertEqual(headline._clean_text(u"   \t   "), u"", "Space and Tabs cleaning failed")
+        #  Entities convertions
         self.assertEqual(headline._clean_text(
             u"\t &laquo;&raquo;&bdquo;&ldquo;&ndash;&mdash;&amp;&quot;&reg;&copy;&trade;&sect;&euro;&nbsp;&rsquo;&Prime;&le;&ge;&lt;&gt;\n \t "
         ), u"«»„“–—&\"®©™§€ ’″≤≥<>", "Html-entities replacement failed")
+        #  Trash entities
         self.assertEqual(headline._clean_text(u"&test; &some;"), u"&test; &some;", "Something width unknown entities")
+        #  &nbsp;
         self.assertEqual(headline._clean_text(u"&nbsp; &nbsp;"), u"\xa0 \xa0", "&nbsp; replacement failed")
 
     def test_create_splitter(self):
         splitter, joiner = headline._create_splitter(u"br")
+        # Br splitter
         self.assertEqual(splitter.split("<br /><br/><br><br    />"), ["","","","",""], "Br splitter failed")
         self.assertEqual(splitter.split("br br br<br />br br<br> br br"), ["br br br","br br"," br br"], "Br splitter failed")
         self.assertEqual(splitter.split("br"), ["br",], "Br splitter failed: single")
         self.assertEqual(joiner.join(("","")), "<br />", "Br joiner failed")
         self.assertEqual(joiner.join(("",)), "", "Br joiner failed: single")
 
+        # All splitter
         splitter, joiner = headline._create_splitter(u"all")
         self.assertEqual(splitter.split("test test<br />test"), ["test","test","test"], "All splitter failed: ")
         self.assertEqual(splitter.split("test test<br /> test"), ["test","test","","test"], "All splitter failed: ")
         self.assertEqual(splitter.split("testtesttest"), ["testtesttest",], "All splitter failed: single")
 
+        # None splitter
         self.assertEqual(headline._create_splitter(u"none"), (False, ""), "None splitter failed: none")
         self.assertEqual(headline._create_splitter(u"other"), (False, ""), "None splitter failed: other")
         self.assertEqual(headline._create_splitter(u""), (False, ""), "None splitter failed: ''")
     
     def test_get_class(self):
 
+        # Exceptions
         self.failUnlessRaises(TemplateSyntaxError, lambda: headline._get_class("base"))
         self.failUnlessRaises(TemplateSyntaxError, lambda: headline._get_class("font.ttf,#000"))
         self.failUnlessRaises(TemplateSyntaxError, lambda: headline._get_class("class_name,all,strikeout:10000"))
         
         decore = {            'font': "font.ttf",            'size': 12,            'color': "#000",            'decoration': {}        }
         
+        # Params parceing
         self.assertEqual(headline._get_class("font.ttf,12,#000"), (decore, False), "Params parsing failed: clean")
         self.assertEqual(headline._get_class("font.ttf,12,#000,all"), (decore, "all"), "Params parsing failed: break type all")
 
@@ -74,6 +87,7 @@ class TestHeadlines(unittest.TestCase):
         decore.update({'decoration': {'strikeout': '7'}})
         self.assertEqual(headline._get_class("font.ttf,12,#000,bug:0,bug, strikeout:7"), (decore, "bug:0"), "Params parsing failed: buggy params")
 
+        # Class parceing
         self.assertEqual(headline._get_class("class_name"), (
             HEADLINE_CLASSES["class_name"], False), "Class parsing failed: clean")
 
@@ -87,6 +101,7 @@ class TestHeadlines(unittest.TestCase):
         
         images = headline._image_list("Test test", klass, splitter, object=False)
         
+        # Image creating and html representation 
         i = 0
         for image in images:
             i += 1
@@ -97,6 +112,7 @@ class TestHeadlines(unittest.TestCase):
         splitter, joiner = headline._create_splitter(u"all")
         images = headline._image_list("test test", klass, splitter, object=True)
 
+        # Image creating and dict representation
         for image in images:
             i += 1
             self.assert_(path.isfile(image['url']), "File is not created")
@@ -120,6 +136,7 @@ class TestHeadlines(unittest.TestCase):
        
     
     def test_do_text_image_filter(self):
+        # Headline filter
         self.assertEqual(headline.do_text_image_filter('test_do_text_image_filter', 'class_name'), u'''<img alt="test_do_text_image_filter" src="./headline-1e1ee9cb10da2d897bdca38eaae8ae12.png" />''', "Template for filter or filter aint work")
         self.assert_(path.isfile("headline-1e1ee9cb10da2d897bdca38eaae8ae12.png"), "File with filter doesnt created")
     
@@ -131,6 +148,7 @@ class TestHeadlines(unittest.TestCase):
         token = Mock()
         token.split_contents = ('headline', 'class_name')
         
+        # Headline tag
         imageNode = headline.do_text_image_tag(parser, token)
         self.assertEqual(imageNode.render(''), u'''<img alt="test_do_text_image_tag" src="./headline-4fe670999bfea37424dfa1789e14e391.png" />''', "Template for tag headline or tag aint work")
         self.assert_(path.isfile("headline-4fe670999bfea37424dfa1789e14e391.png"), "File with tag headline doesnt created")
@@ -147,6 +165,7 @@ class TestHeadlines(unittest.TestCase):
         context = dict()
         imageNodes.render(context)
         
+        # Headlines tag and context modifacation
         self.assertEqual(len(context['headlines']), 2)
         self.assertEqual(context['headlines'][0]['url'], "./headline-8833bb66718a93d75a8330cf1f7c0f9e.png")
         self.assertEqual(context['headlines'][0]['text'], "test_do_text_images_tag")

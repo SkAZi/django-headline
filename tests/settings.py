@@ -1,6 +1,6 @@
 import os.path
 
-
+### Use current directoy for testing
 MEDIA_ROOT = os.path.dirname(__file__)
 MEDIA_URL = ''
 
@@ -18,9 +18,5 @@ HEADLINE_CLASSES = {
 }
 
 HEADLINE_CACHE_DIR = '.'
-
 HEADLINE_FONTS_DIR = '.'
-
 HEADLINE_TEMPLATE = """<img alt="%(text)s" src="%(url)s" />"""
-
-#HEADLINE_PNG_OPTIMIZER = "optipng -q -o7 %(file)s"
