@@ -33,6 +33,7 @@ AVIABLE_DECORATIONS = {
     'underline': 0,
     'strikeout': 0,
     'opacity': 1,
+    'rotate': 0,
 }
 
 ENTITY_CONVERTER = re.compile(r'(?:&#x([a-fA-F\d]{1,4});)|(?:&#(\d{1,5});)|(?:&([a-zA-Z\d]+);)')
@@ -68,6 +69,7 @@ def _clean_text(text):
 
 
 
+
 def _img_from_text(text, font, size=12, color='#000', decoration={}):
     """
         Draws text with font, size, color and decoration parameters.
@@ -100,8 +102,10 @@ def _img_from_text(text, font, size=12, color='#000', decoration={}):
         else:
             opacity = 255
             
-        ### Draws an underline
+        ### Draws text
         draw.text((0, 0), text, font=font, fill=opacity)
+        
+        ### Draws an underline
         if decoration.has_key('underline'):
             val = int(decoration['underline'])
             draw.line((0 + size/20, height * 4 / 5 + val,
@@ -121,6 +125,22 @@ def _img_from_text(text, font, size=12, color='#000', decoration={}):
         immask = Image.eval(imtext, lambda p: 255 * (int(p != 0)))
         image = Image.composite(solidcolor, image, immask)
         image.putalpha(alpha)
+        
+        ### Rotation
+        if decoration.has_key('rotate') and decoration['rotate']:
+            angle = float(decoration['rotate'])
+            if angle == 90:
+                image = image.transpose(Image.ROTATE_90)
+            elif angle == 180:
+                image = image.transpose(Image.ROTATE_180)
+            elif angle == 270:
+                image = image.transpose(Image.ROTATE_270)
+            else:
+                # XXX: Bad rotation
+                image = image.rotate(angle, Image.BICUBIC, True)
+            width, height = image.size
+        
+        ### Save image
         image.save(image_file, "PNG")
         
         ### Optimize png with external tool

@@ -42,6 +42,8 @@ Based on django-image-replacement:
 http://code.google.com/p/django-image-replacement/
 Thanx to Ned for trully transparent text algorythm:
 http://nedbatchelder.com/blog/200801/truly_transparent_text_with_pil.html
+Thanx to Iola for ideas and technics from django-rendertext
+http://code.google.com/p/django-rendertext/
 Thanx to Anton Gritsay (http://angri.ru/) for moral encouragement and useful 
 hints.
 
