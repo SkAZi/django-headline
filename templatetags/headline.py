@@ -137,6 +137,8 @@ def _img_from_text(text, font, size=12, color='#000', decoration={}):
                 image = image.transpose(Image.ROTATE_270)
             else:
                 # XXX: Bad rotation
+                # Really bicubic transformation works only
+                # when canvas doesn`t resize: last param is False
                 image = image.rotate(angle, Image.BICUBIC, True)
             width, height = image.size
         
@@ -202,6 +204,7 @@ def _get_class( klass ):
     """
     params = re.split(r", *", klass.strip('"'))
     cleaned = []
+    klass = False
     typ = False
 
     ### If it is render parameters string
@@ -233,22 +236,25 @@ def _get_class( klass ):
             'decoration': decoration
         }
         
-        return klass, typ
-        
     ### If it is class
     elif params > 0:
-        klass = params[0]
+        try:
+            klass = HEADLINE_CLASSES[params[0]]
+        except:
+            raise TemplateSyntaxError('There is no class %s in HEADLINE_CLASSES definition.' % klass)
+        
+        ### Back compatibility with v0.2
+        if isinstance(klass['decoration'], (list, tuple)):
+            decoration = {}
+            for i in klass['decoration']:
+                decoration[i] = AVIABLE_DECORATIONS[i]
+            klass['decoration'] = decoration
         
         ### Type of splitting can be here too
         if len(params) > 1:
             typ = params[1]
         
-        try:
-            return HEADLINE_CLASSES[klass], typ
-        except:
-            raise TemplateSyntaxError('There is no class %s in HEADLINE_CLASSES definition.' % klass)
-        
-    return False, False
+    return klass, typ
 
 
 
