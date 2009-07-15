@@ -14,6 +14,17 @@ HEADLINE_CLASSES = {
             'strikeout': 0,
             'opacity': 0.5,
         }
+   }, 
+   "class_v2": {
+       'font': "font.ttf",
+       'size': 120,
+       'color': "#000",
+       'decoration': ['underline'],
+   },
+   "class_no_dec": {
+       'font': "font.ttf",
+       'size': 120,
+       'color': "#000",
    }
 }
 

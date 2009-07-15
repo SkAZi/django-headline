@@ -244,7 +244,7 @@ def _get_class( klass ):
             raise TemplateSyntaxError('There is no class %s in HEADLINE_CLASSES definition.' % klass)
         
         ### Back compatibility with v0.2
-        if isinstance(klass['decoration'], (list, tuple)):
+        if isinstance(klass.setdefault('decoration', {}), (list, tuple)):
             decoration = {}
             for i in klass['decoration']:
                 decoration[i] = AVIABLE_DECORATIONS[i]

@@ -94,6 +94,9 @@ class TestHeadlines(unittest.TestCase):
         self.assertEqual(headline._get_class("class_name,all"), (
             HEADLINE_CLASSES["class_name"], "all"), "Class parsing failed: with break type")
 
+        self.assert_(isinstance(headline._get_class("class_v2")[0]['decoration'], dict), "Class parsing failed: back compatibility v0.2")
+        self.assert_(isinstance(headline._get_class("class_no_dec")[0]['decoration'], dict), "Class parsing failed: no decore")
+        self.assertEqual(headline._get_class("class_no_dec")[0]['decoration'], {}, "Class parsing failed: with break type")
 
     def test_image_list(self):
         splitter, joiner = headline._create_splitter(u"br")
